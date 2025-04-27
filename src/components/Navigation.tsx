@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { user, logout } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +19,12 @@ export default function Navigation() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleLogout = async () => {
+    await logout()
+    router.push('/')
+    setIsMenuOpen(false)
+  }
 
   return (
     <motion.nav
@@ -26,50 +36,62 @@ export default function Navigation() {
     >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-20">
-          <Link href="/" className="text-2xl font-bold text-primary-700 font-lato">
-            AIFAQ
+          <Link href="/" className="flex items-center">
+            <div className="flex flex-col mr-4">
+              <span className="text-2xl font-bold text-primary-700 font-lato tracking-tight">AIFAQ</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            {[
-              { href: '#features', label: 'Features' },
-              { href: '#pricing', label: 'Pricing' },
-              { href: '#business-cases', label: 'Business Cases' },
-              { href: '#about', label: 'About' },
-              { href: '#contact', label: 'Contact' }
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`relative text-gray-700 hover:text-primary-600 transition-colors duration-300 ${
-                  scrolled ? 'text-gray-700' : 'text-white'
-                }`}
-              >
-                {item.label}
-                <motion.span
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600"
-                  whileHover={{ width: '100%' }}
-                  transition={{ duration: 0.3 }}
-                />
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center space-x-8">
+            {!user ? (
+              <>
+                <Link
+                  href="/chat"
+                  className={`relative text-gray-700 hover:text-primary-600 transition-colors duration-300 ${
+                    scrolled ? 'text-gray-700' : 'text-white'
+                  }`}
+                >
+                  Try Chat
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300"
+                >
+                  Login
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/dashboard"
+                  className={`relative text-gray-700 hover:text-primary-600 transition-colors duration-300 ${
+                    scrolled ? 'text-gray-700' : 'text-white'
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/chat"
+                  className={`relative text-gray-700 hover:text-primary-600 transition-colors duration-300 ${
+                    scrolled ? 'text-gray-700' : 'text-white'
+                  }`}
+                >
+                  My Chat
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-white text-primary-600 rounded-md hover:bg-gray-100 transition-colors duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="px-4 py-2 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition-colors duration-300">
-              Demo
-            </button>
-            <button className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
-              Get Started
-            </button>
-          </div>
-
-          {/* Mobile menu button */}
+          {/* Mobile Menu Button */}
           <button
-            className={`md:hidden p-2 rounded-lg transition-colors duration-200 ${
-              scrolled ? 'text-gray-700' : 'text-white'
-            }`}
+            className="md:hidden text-gray-700 focus:outline-none"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <span className="material-symbols-outlined">
@@ -77,49 +99,65 @@ export default function Navigation() {
             </span>
           </button>
         </div>
-
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden overflow-hidden"
-            >
-              <div className="py-4 space-y-4">
-                {[
-                  { href: '#features', label: 'Features' },
-                  { href: '#pricing', label: 'Pricing' },
-                  { href: '#business-cases', label: 'Business Cases' },
-                  { href: '#about', label: 'About' },
-                  { href: '#contact', label: 'Contact' }
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`block px-4 py-2 rounded-lg transition-colors duration-200 ${
-                      scrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-white hover:bg-white/10'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-                <div className="px-4 py-2 space-y-2">
-                  <button className="w-full px-4 py-2 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition-colors duration-300">
-                    Demo
-                  </button>
-                  <button className="w-full px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300">
-                    Get Started
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-white shadow-lg"
+          >
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex flex-col space-y-4">
+                {!user ? (
+                  <>
+                    <Link
+                      href="/chat"
+                      className="text-gray-700 hover:text-primary-600 transition-colors duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Try Chat
+                    </Link>
+                    <Link
+                      href="/login"
+                      className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-300 text-center"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      className="text-gray-700 hover:text-primary-600 transition-colors duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/dashboard/chat"
+                      className="text-gray-700 hover:text-primary-600 transition-colors duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Chat
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="px-4 py-2 bg-white text-primary-600 border border-primary-600 rounded-md hover:bg-gray-100 transition-colors duration-300 text-center"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   )
 } 

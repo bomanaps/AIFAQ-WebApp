@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useAuth } from '@/context/AuthContext'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -19,6 +20,8 @@ const staggerContainer = {
 }
 
 export default function Home() {
+  const { user } = useAuth()
+  
   return (
     <div className="min-h-screen w-full max-w-[1200px] mx-auto font-sans bg-gradient-to-b from-white to-gray-50">
       {/* Hero Section */}
@@ -32,22 +35,41 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Private Data, Secure with Custom Chatbots</h2>
             <p className="text-base md:text-lg mb-6 md:mb-8 text-gray-700">Enterprise-grade AI chatbots that keep your data secure while providing personalized responses. Integrate with your existing systems and workflows.</p>
             <div className="flex flex-wrap gap-4">
-              <a
-                href="https://www.youtube.com/live/dOC4KGYjpJI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 md:px-6 py-2 md:py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg text-sm md:text-base inline-flex items-center"
-              >
-                <span className="material-symbols-outlined mr-2 text-sm md:text-base">play_circle</span>
-                Watch Demo
-              </a>
-              <Link
-                href="/use-cases"
-                className="px-4 md:px-6 py-2 md:py-3 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition-all duration-300 transform hover:-translate-y-1 shadow-sm hover:shadow-md text-sm md:text-base inline-flex items-center"
-              >
-                <span className="material-symbols-outlined mr-2 text-sm md:text-base">info</span>
-                Learn More
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard/chat"
+                    className="px-4 md:px-6 py-2 md:py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg text-sm md:text-base inline-flex items-center"
+                  >
+                    <span className="material-symbols-outlined mr-2 text-sm md:text-base">chat</span>
+                    Start Chat
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="px-4 md:px-6 py-2 md:py-3 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition-all duration-300 transform hover:-translate-y-1 shadow-sm hover:shadow-md text-sm md:text-base inline-flex items-center"
+                  >
+                    <span className="material-symbols-outlined mr-2 text-sm md:text-base">dashboard</span>
+                    Dashboard
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/chat"
+                    className="px-4 md:px-6 py-2 md:py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg text-sm md:text-base inline-flex items-center"
+                  >
+                    <span className="material-symbols-outlined mr-2 text-sm md:text-base">chat</span>
+                    Try as Guest
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="px-4 md:px-6 py-2 md:py-3 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition-all duration-300 transform hover:-translate-y-1 shadow-sm hover:shadow-md text-sm md:text-base inline-flex items-center"
+                  >
+                    <span className="material-symbols-outlined mr-2 text-sm md:text-base">login</span>
+                    Login
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

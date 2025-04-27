@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Open_Sans, Lato } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
+import ClientAuthProvider from '@/components/ClientAuthProvider'
 
 const openSans = Open_Sans({ 
   subsets: ['latin'],
@@ -33,10 +34,12 @@ export default function RootLayout({
         />
       </head>
       <body className={`${openSans.className} bg-gradient-to-b from-white to-gray-50`}>
-        <Navigation />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <ClientAuthProvider>
+          <Navigation />
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </ClientAuthProvider>
       </body>
     </html>
   )
